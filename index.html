@@ -73,9 +73,31 @@
         
         .adsterra-space { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 300px; height: 250px; margin: 20px auto; background: #f1f5f9; border: 2px dashed #cbd5e1; border-radius: 12px; overflow: hidden; position: relative; }
         .adsterra-space::before { content: "مساحة إعلان Adsterra"; position: absolute; top: 10px; font-size: 11px; color: #94a3b8; font-weight: bold; text-align: center; width: 100%; }
+
+        /* 💬 تصميم صندوق الشات الجديد الإضافي دون المساس بالتصميم القديم */
+        .btn-chat-trigger { display: block; text-align: center; background: #6366f1; color: white; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; margin-top: 2px; }
+        .chat-overlay { position: fixed; bottom: 20px; left: 20px; width: 300px; background: white; border: 2px solid #e2e8f0; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); z-index: 9999; overflow: hidden; display: flex; flex-direction: column; }
+        .chat-header-bar { background: #6366f1; color: white; padding: 12px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .chat-msg-area { height: 200px; overflow-y: auto; padding: 10px; background: #f8fafc; display: flex; flex-direction: column; gap: 8px; }
+        .chat-footer-bar { display: flex; gap: 6px; padding: 8px; background: white; border-top: 1px solid #e2e8f0; }
+        .chat-footer-bar input { flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; }
+        .chat-footer-bar button { background: #6366f1; color: white; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; }
     </style>
 </head>
 <body>
+
+    <!-- صندوق الشات المباشر العائم المضاف حديثاً -->
+    <div id="global-chat-box" class="chat-overlay hidden">
+        <div class="chat-header-bar">
+            <span id="chat-with-title">محادثة لايف</span>
+            <button onclick="closeChatBox()" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer; font-size: 16px;">✕</button>
+        </div>
+        <div class="chat-msg-area" id="chat-messages-container"></div>
+        <div class="chat-footer-bar">
+            <input type="text" id="chat-text-input" placeholder="اكتب رسالة...">
+            <button onclick="sendChatMessage()">إرسال</button>
+        </div>
+    </div>
 
     <div class="app-card">
         
@@ -176,6 +198,9 @@
 
         var allProducts = [];
         var currentUser = { name: '', role: 'merchant' };
+        
+        // متغيرات تابعة لنظام الشات الجديد
+        var currentChatPartner = ""; 
 
         // دالة تحديد الـ GPS تلقائياً بضغطة زر
         function getCurrentGPSLocation() {
@@ -223,9 +248,14 @@
                     else renderMarketProducts();
                 }
             }).catch(err => console.log("خطأ في جلب البيانات:", err));
+
+            // تحديث الشات فوراً وبشكل دوري إذا كان مفتوحاً
+            if(currentChatPartner) {
+                loadChatMessagesFromServer();
+            }
         }
 
-        setInterval(loadProductsFromServer, 5000);
+        setInterval(loadProductsFromServer, 4000);
 
         function setRole(role) {
             currentUser.role = role;
@@ -255,6 +285,7 @@
             document.getElementById('screen-merchant').classList.add('hidden');
             document.getElementById('screen-rep').classList.add('hidden');
             document.getElementById('screen-welcome').classList.remove('hidden');
+            closeChatBox();
         }
 
         function processAndAddProduct() {
@@ -302,7 +333,8 @@
                 phone: phone,
                 location: locationUrl,
                 desc: desc ? desc : 'بضاعة جاهزة للاستلام فوراً.',
-                image: imgData
+                image: imgData,
+                lastInterestedRep: "" // لتخزين اسم آخر مندوب فتح دردشة بخصوص هذا المنتج
             };
 
             fetch(FIREBASE_URL + "products.json", {
@@ -326,6 +358,15 @@
                 if(allProducts[i].merchantName === currentUser.name) {
                     count++;
                     var locLink = allProducts[i].location ? '<a class="prod-location" href="' + allProducts[i].location + '" target="_blank">📍 لوكيشن محلك المرفوع</a>' : '';
+                    
+                    // زرار الشات للتاجر مع المندوب المهتم بالبضاعة إن وُجد
+                    var chatBtn = '';
+                    if(allProducts[i].lastInterestedRep) {
+                        chatBtn = '<button class="btn-chat-trigger" onclick="openChatBox(\'' + allProducts[i].lastInterestedRep + '\')">💬 شات المندوب: ' + allProducts[i].lastInterestedRep + '</button>';
+                    } else {
+                        chatBtn = '<button class="btn-chat-trigger" style="background:#94a3b8; cursor:not-allowed;" disabled>💬 لا توجد استفسارات بعد</button>';
+                    }
+
                     html += '<div class="prod-card">' +
                             '<button onclick="deleteProduct(\'' + allProducts[i].fbKey + '\')" class="delete-btn">حذف ❌</button>' +
                             '<img class="prod-img" src="' + allProducts[i].image + '">' +
@@ -335,6 +376,7 @@
                             '<div class="actions-div">' +
                             '<span style="font-size:12px; color:#475569; text-align:center;">📞 تليفونك: ' + allProducts[i].phone + '</span>' +
                             locLink +
+                            chatBtn +
                             '</div></div>';
                 }
             }
@@ -351,6 +393,10 @@
             if(allProducts.length === 0) { list.innerHTML = '<p style="text-align:center; font-size:13px; color:#94a3b8; padding:30px; grid-column:1/-1;">السوق فارغ تماماً حالياً.</p>'; return; }
             for(var i = 0; i < allProducts.length; i++) {
                 var locLink = allProducts[i].location ? '<a class="prod-location" href="' + allProducts[i].location + '" target="_blank">📍 موقع المحل على الخريطة</a>' : '<span style="font-size:11px; color:#94a3b8; text-align:center;">لم يضف التاجر لوكيشن</span>';
+                
+                // زرار فتح شات مباشر للمندوب يراسل التاجر فوراً
+                var chatBtn = '<button class="btn-chat-trigger" onclick="notifyMerchantAndChat(\'' + allProducts[i].fbKey + '\', \'' + allProducts[i].merchantName + '\')">💬 فتح شات سريع لايف</button>';
+
                 html += '<div class="prod-card">' +
                         '<img class="prod-img" src="' + allProducts[i].image + '">' +
                         '<div class="prod-shop">🏬 التاجر: ' + allProducts[i].merchantName + '</div>' +
@@ -360,9 +406,93 @@
                         '<div class="actions-div">' +
                         '<a class="prod-contact" href="tel:' + allProducts[i].phone + '">📞 اتصال وتفاوض</a>' +
                         locLink +
+                        chatBtn +
                         '</div></div>';
             }
             list.innerHTML = html;
+        }
+
+        // دالة مخصصة للمندوب لتنبيه التاجر باسمه أولاً ثم فتح الشات
+        function notifyMerchantAndChat(prodFbKey, merchantName) {
+            fetch(FIREBASE_URL + "products/" + prodFbKey + ".json", {
+                method: "PATCH",
+                body: JSON.stringify({ lastInterestedRep: currentUser.name })
+            }).then(() => {
+                openChatBox(merchantName);
+            });
+        }
+
+        // دالة فتح صندوق الدردشة
+        function openChatBox(partnerName) {
+            currentChatPartner = partnerName;
+            document.getElementById('chat-with-title').innerText = "💬 شات مع: " + partnerName;
+            document.getElementById('global-chat-box').classList.remove('hidden');
+            loadChatMessagesFromServer();
+        }
+
+        // غلق صندوق الدردشة
+        function closeChatBox() {
+            currentChatPartner = "";
+            document.getElementById('global-chat-box').classList.add('hidden');
+        }
+
+        // إرسال رسالة شات جديدة للسيرفر
+        function sendChatMessage() {
+            var input = document.getElementById('chat-text-input');
+            var text = input.value.trim();
+            if(!text || !currentChatPartner) return;
+
+            var newMsg = {
+                sender: currentUser.name,
+                receiver: currentChatPartner,
+                message: text,
+                timestamp: Date.now()
+            };
+
+            fetch(FIREBASE_URL + "chats.json", {
+                method: "POST",
+                body: JSON.stringify(newMsg)
+            }).then(() => {
+                input.value = "";
+                loadChatMessagesFromServer();
+            });
+        }
+
+        // جلب رسائل الشات الحالية وعرضها بطريقة منسقة
+        function loadChatMessagesFromServer() {
+            fetch(FIREBASE_URL + "chats.json")
+            .then(res => res.json())
+            .then(data => {
+                var container = document.getElementById('chat-messages-container');
+                container.innerHTML = "";
+                if(data) {
+                    Object.keys(data).forEach(key => {
+                        var m = data[key];
+                        // التحقق من أن الرسائل متبادلة فقط بين المستخدم الحالي والطرف الآخر
+                        if((m.sender === currentUser.name && m.receiver === currentChatPartner) || 
+                           (m.sender === currentChatPartner && m.receiver === currentUser.name)) {
+                            
+                            var msgDiv = document.createElement('div');
+                            var isMe = m.sender === currentUser.name;
+                            
+                            // تنسيق الرسالة حسب المرسل
+                            msgDiv.style.alignSelf = isMe ? 'flex-end' : 'flex-start';
+                            msgDiv.style.background = isMe ? '#6366f1' : '#e2e8f0';
+                            msgDiv.style.color = isMe ? 'white' : '#1e293b';
+                            msgDiv.style.padding = '6px 12px';
+                            msgDiv.style.borderRadius = '10px';
+                            msgDiv.style.maxWidth = '85%';
+                            msgDiv.style.fontSize = '13px';
+                            msgDiv.style.direction = 'rtl';
+                            msgDiv.style.textAlign = 'right';
+                            msgDiv.innerText = m.message;
+                            
+                            container.appendChild(msgDiv);
+                        }
+                    });
+                    container.scrollTop = container.scrollHeight; // النزول لآخر رسالة تلقائياً
+                }
+            });
         }
     </script>
 </body>
