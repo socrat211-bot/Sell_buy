@@ -46,6 +46,10 @@
         .prod-location { display: block; text-align: center; background: #0ea5e9; color: white; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
         
         .delete-btn { background: #ef4444; color: white; border: none; border-radius: 6px; padding: 2px 6px; font-size: 11px; font-weight: 700; cursor: pointer; position: absolute; top: 8px; left: 8px; z-index: 5; }
+        
+        /* تصميم مساحة الإعلان التابع لـ Adsterra */
+        .adsterra-holder { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px auto 10px auto; min-height: 250px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 5px; overflow: hidden; }
+        .ad-label { font-size: 10px; color: #94a3b8; font-weight: bold; margin-bottom: 4px; }
     </style>
 </head>
 <body>
@@ -56,7 +60,7 @@
         <div id="screen-welcome">
             <div class="text-center">
                 <h1>سوق التجار والمناديب الذكي 🤝</h1>
-                <p class="subtitle">نسخة مدعومة بالصور المضغوطة لتجنب أي تهنيج أو بطء</p>
+                <p class="subtitle">نسخة مدعومة بالصور المضغوطة واللوكيشن الذكي</p>
             </div>
             
             <label>اكتب اسمك أو اسم المحل الخاص بك:</label>
@@ -69,6 +73,21 @@
             </div>
             
             <button onclick="loginUser()" class="btn-submit" style="background: #10b981;">دخول المنصة ➔</button>
+
+            <!-- 📢 إعلان Adsterra في الصفحة الرئيسية -->
+            <div class="adsterra-holder">
+                <span class="ad-label">إعلان مروّج 📢</span>
+                <script style="display:none;">
+                  atOptions = {
+                    'key' : '1dbd6aa0d79aa551edf53ad17a91d272',
+                    'format' : 'iframe',
+                    'height' : 250,
+                    'width' : 300,
+                    'params' : {}
+                  };
+                </script>
+                <script src="https://www.highperformanceformat.com/1dbd6aa0d79aa551edf53ad17a91d272/invoke.js"></script>
+            </div>
         </div>
 
         <!-- 2️⃣ لوحة تحكم التاجر -->
@@ -100,7 +119,7 @@
                 <label>وصف وتفاصيل البضاعة</label>
                 <textarea id="p-desc" rows="2" placeholder="اكتب تفاصيل وحالة البضاعة هنا..."></textarea>
                 
-                <label>صورة المنتج (سيتم ضغطها تلقائياً لتسريع الموقع)</label>
+                <label>صورة المنتج</label>
                 <input id="p-image" type="file" accept="image/*" style="background: white; padding: 8px;">
                 
                 <button onclick="processAndAddProduct()" class="btn-submit">نشر البضاعة بالصورة واللوكيشن</button>
@@ -117,6 +136,21 @@
                 <h2 id="rep-heading">سوق المناديب 🛵</h2>
             </div>
             
+            <!-- 📢 إعلان Adsterra داخل لوحة المندوب أثناء التصفح لجلب نقرات أعلى -->
+            <div class="adsterra-holder" style="min-height:120px; margin-top:0; margin-bottom:15px;">
+                <span class="ad-label">إعلان مروّج 📢</span>
+                <script style="display:none;">
+                  atOptions = {
+                    'key' : '1dbd6aa0d79aa551edf53ad17a91d272',
+                    'format' : 'iframe',
+                    'height' : 250,
+                    'width' : 300,
+                    'params' : {}
+                  };
+                </script>
+                <script src="https://www.highperformanceformat.com/1dbd6aa0d79aa551edf53ad17a91d272/invoke.js"></script>
+            </div>
+
             <h3 style="font-size: 15px; margin-bottom: 12px; text-align: right;">🛒 البضائع المتاحة حالياً في السوق للطلب:</h3>
             <div id="market-prods-list" class="products-grid"></div>
         </div>
@@ -163,7 +197,6 @@
             document.getElementById('screen-welcome').classList.remove('hidden');
         }
 
-        // دالة ضغط الصورة الذكية لتقليل الحجم ومنع التهنيج
         function processAndAddProduct() {
             var name = document.getElementById('p-name').value.trim();
             var price = document.getElementById('p-price').value.trim();
@@ -184,9 +217,8 @@
                 reader.onload = function(e) {
                     var img = new Image();
                     img.onload = function() {
-                        // استخدام Canvas لضغط البكسل والأبعاد لتسريع الذاكرة
                         var canvas = document.createElement('canvas');
-                        var max_size = 400; // أقصى عرض للصورة لتكون خفيفة جداً
+                        var max_size = 400; 
                         var width = img.width;
                         var height = img.height;
                         if (width > height) {
@@ -196,10 +228,8 @@
                         }
                         canvas.width = width;
                         canvas.height = height;
-                        var ctx = canvas.getContext('2ctx') || canvas.getContext('2d');
+                        var ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
-                        
-                        // تصدير الصورة بجودة مضغوطة 60% فقط
                         var compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
                         saveProduct(name, price, phone, locationUrl, desc, compressedBase64);
                     }
@@ -222,32 +252,22 @@
                 desc: desc ? desc : 'بضاعة جاهزة للاستلام فوراً.',
                 image: imgData
             };
-
             allProducts.push(newProd);
             localStorage.setItem('secure_market_prods', JSON.stringify(allProducts));
-
-            alert('✅ تم نشر بضاعتك بالصورة والموقع بنجاح!');
+            alert('✅ تم نشر بضاعتك بنجاح!');
             
-            document.getElementById('p-name').value = '';
-            document.getElementById('p-price').value = '';
-            document.getElementById('p-phone').value = '';
-            document.getElementById('p-location').value = '';
-            document.getElementById('p-desc').value = '';
-            document.getElementById('p-image').value = '';
-
+            document.getElementById('p-name').value = ''; document.getElementById('p-price').value = '';
+            document.getElementById('p-phone').value = ''; document.getElementById('p-location').value = '';
+            document.getElementById('p-desc').value = ''; document.getElementById('p-image').value = '';
             renderMerchantProducts();
         }
 
         function renderMerchantProducts() {
-            var list = document.getElementById('merchant-prods-list');
-            var html = '';
-            var count = 0;
-
+            var list = document.getElementById('merchant-prods-list'); var html = ''; var count = 0;
             for(var i = 0; i < allProducts.length; i++) {
                 if(allProducts[i].merchantName === currentUser.name) {
                     count++;
                     var locLink = allProducts[i].location ? '<a class="prod-location" href="' + allProducts[i].location + '" target="_blank">📍 لوكيشن محلك المرفوع</a>' : '';
-                    
                     html += '<div class="prod-card">' +
                             '<button onclick="deleteProduct(' + allProducts[i].id + ')" class="delete-btn">حذف ❌</button>' +
                             '<img class="prod-img" src="' + allProducts[i].image + '">' +
@@ -270,17 +290,10 @@
         }
 
         function renderMarketProducts() {
-            var list = document.getElementById('market-prods-list');
-            var html = '';
-
-            if(allProducts.length === 0) {
-                list.innerHTML = '<p style="text-align:center; font-size:13px; color:#94a3b8; padding:30px; grid-column:1/-1;">السوق فارغ تماماً حالياً.</p>';
-                return;
-            }
-
+            var list = document.getElementById('market-prods-list'); var html = '';
+            if(allProducts.length === 0) { list.innerHTML = '<p style="text-align:center; font-size:13px; color:#94a3b8; padding:30px; grid-column:1/-1;">السوق فارغ تماماً حالياً.</p>'; return; }
             for(var i = 0; i < allProducts.length; i++) {
                 var locLink = allProducts[i].location ? '<a class="prod-location" href="' + allProducts[i].location + '" target="_blank">📍 موقع المحل على الخريطة</a>' : '<span style="font-size:11px; color:#94a3b8; text-align:center;">لم يضف التاجر لوكيشن</span>';
-                
                 html += '<div class="prod-card">' +
                         '<img class="prod-img" src="' + allProducts[i].image + '">' +
                         '<div class="prod-shop">🏬 التاجر: ' + allProducts[i].merchantName + '</div>' +
@@ -288,7 +301,7 @@
                         '<div class="prod-price">' + allProducts[i].price + ' ج.م</div>' +
                         '<div class="prod-desc">' + allProducts[i].desc + '</div>' +
                         '<div class="actions-div">' +
-                        '<a class="prod-contact" href="tel:' + allProducts[i].phone + '">📞 اتصال وتفاوض (' + allProducts[i].phone + ')</a>' +
+                        '<a class="prod-contact" href="tel:' + allProducts[i].phone + '">📞 اتصال وتفاوض</a>' +
                         locLink +
                         '</div></div>';
             }
