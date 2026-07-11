@@ -3,121 +3,479 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SouqPro - النسخة النهائية</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>سوق التجار والمناديب الذكي المشترك</title>
+    <!-- خط القاهرة -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #0284c7; --dark: #0f172a; --success: #10b981; --warn: #f59e0b; }
-        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background: linear-gradient(135deg, #0f172a, #1e293b); color: white; min-height: 100vh; padding: 10px; }
-        .container { max-width: 600px; margin: auto; background: white; color: #333; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .btn { border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        .btn-primary { background: var(--primary); color: white; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        
+        /* 🌌 الخلفية التقنية الفخمة والمتحركة */
+        body { 
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #311042, #0f172a);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #1e293b; 
+            padding: 15px; 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .app-card { background: rgba(255, 255, 255, 0.95); width: 100%; max-w: 680px; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); padding: 25px; backdrop-filter: blur(10px); position: relative; }
         .hidden { display: none !important; }
-        .card { border: 1px solid #ddd; padding: 15px; border-radius: 15px; margin-bottom: 15px; background: #f9f9f9; }
-        .chat-box { height: 300px; overflow-y: scroll; border: 1px solid #eee; padding: 10px; margin-bottom: 10px; background: #fff; }
-        .toast { position: fixed; top: 20px; right: 20px; background: var(--success); color: white; padding: 15px; border-radius: 10px; z-index: 9999; }
+        .text-center { text-align: center; }
+        
+        h1 { font-size: 24px; font-weight: 900; color: #0284c7; margin-bottom: 5px; }
+        p.subtitle { font-size: 13px; color: #64748b; margin-bottom: 25px; }
+        
+        label { display: block; font-size: 13px; font-weight: 700; color: #475569; margin: 12px 0 4px; text-align: right; }
+        input, textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; background: #f8fafc; font-size: 14px; outline: none; text-align: right; }
+        input:focus, textarea:focus { border-color: #0284c7; background: white; }
+        
+        /* 📍 تصميم أزرار اللوكيشن الذكية القديمة */
+        .location-container { display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
+        .btn-gps { background: #0284c7; color: white; border: none; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: background 0.2s; }
+        .btn-gps:hover { background: #0369a1; }
+        .gps-status { font-size: 11px; color: #059669; font-weight: bold; text-align: right; margin-top: -2px; }
+        
+        .role-grid { display: flex; gap: 15px; margin-top: 10px; margin-bottom: 20px; }
+        .role-btn { flex: 1; padding: 15px; border: 2px solid #e2e8f0; border-radius: 16px; background: white; font-size: 15px; font-weight: 700; cursor: pointer; text-align: center; color: #64748b; }
+        .role-btn.active { border-color: #0284c7; background: #f0f9ff; color: #0284c7; }
+        
+        button.btn-submit { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 15px; background: #0284c7; color: white; }
+        button.btn-submit:hover { background: #0369a1; }
+        button.btn-back { background: #64748b; color: white; width: auto; padding: 6px 15px; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        
+        .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 20px; }
+        
+        .products-grid { display: grid; grid-template-columns: 1fr; gap: 15px; max-height: 420px; overflow-y: auto; padding-left: 5px; }
+        @media(min-width: 535px) { .products-grid { grid-template-columns: 1fr 1fr; } }
+        
+        .prod-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 12px; display: flex; flex-direction: column; position: relative; text-align: right; }
+        .prod-img { width: 100%; height: 140px; object-fit: cover; border-radius: 10px; background: #e2e8f0; margin-bottom: 8px; }
+        .prod-title { font-weight: 700; font-size: 15px; color: #0f172a; }
+        .prod-price { color: #10b981; font-weight: 800; font-size: 16px; margin: 2px 0; }
+        .prod-shop { font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 6px; display: inline-block; width: fit-content; font-weight: bold; margin-bottom: 5px; }
+        .prod-desc { font-size: 12px; color: #64748b; margin-bottom: 10px; line-height: 1.4; }
+        
+        .actions-div { display: flex; flex-direction: column; gap: 6px; margin-top: auto; }
+        .prod-contact { display: block; text-align: center; background: #10b981; color: white; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
+        .prod-location { display: block; text-align: center; background: #0ea5e9; color: white; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
+        
+        /* 🔵 التصاميم الجديدة المضافة (البحث، الحجز، الشات، الإشعارات) من غير تعديل القديم */
+        .search-input { width: 100%; padding: 10px; margin-bottom: 15px; border: 2px solid #0284c7; border-radius: 10px; text-align: right; font-size: 14px; }
+        .btn-book { display: block; text-align: center; background: #f59e0b; color: white; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; }
+        .btn-chat { display: block; text-align: center; background: #6366f1; color: white; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; margin-top: 4px; }
+        .booked-badge { background: #ef4444 !important; color: white; text-align: center; padding: 6px; border-radius: 8px; font-size: 12px; font-weight: bold; }
+        
+        /* الإشعار العائم العلوي */
+        .toast-notification { position: fixed; top: 15px; left: 15px; background: #10b981; color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: bold; font-size: 13px; z-index: 9999; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+
+        /* صندوق نافذة الشات المباشر */
+        .chat-window { position: fixed; bottom: 15px; left: 15px; width: 290px; background: white; border: 2px solid #e2e8f0; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 9998; overflow: hidden; display: flex; flex-direction: column; }
+        .chat-header { background: #6366f1; color: white; padding: 10px; font-weight: bold; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+        .chat-body { height: 180px; overflow-y: auto; padding: 10px; background: #f8fafc; font-size: 12px; }
+        .chat-footer { display: flex; padding: 5px; background: white; border-top: 1px solid #e2e8f0; }
+        .chat-footer input { flex: 1; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; }
+        .chat-footer button { background: #6366f1; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+
+        .delete-btn { background: #ef4444; color: white; border: none; border-radius: 6px; padding: 2px 6px; font-size: 11px; font-weight: 700; cursor: pointer; position: absolute; top: 8px; left: 8px; z-index: 5; }
+        .adsterra-space { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 300px; height: 250px; margin: 20px auto; background: #f1f5f9; border: 2px dashed #cbd5e1; border-radius: 12px; overflow: hidden; position: relative; }
+        .adsterra-space::before { content: "مساحة إعلان Adsterra"; position: absolute; top: 10px; font-size: 11px; color: #94a3b8; font-weight: bold; text-align: center; width: 100%; }
     </style>
 </head>
 <body>
 
-<div id="toast" class="toast hidden"></div>
+    <!-- الإشعار العائم -->
+    <div id="app-toast" class="toast-notification hidden"></div>
 
-<div class="container">
-    <!-- Login Screen -->
-    <div id="screen-login">
-        <h2 style="text-align:center;">مرحباً بك في SouqPro 🤝</h2>
-        <input id="input-name" type="text" placeholder="اسمك الكريم..." style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;">
-        <select id="input-role" style="width:100%; padding:10px; margin:10px 0;">
-            <option value="merchant">تاجر 🏬</option>
-            <option value="rep">مندوب 🛵</option>
-        </select>
-        <button class="btn btn-primary" onclick="login()">دخول المنصة</button>
-    </div>
-
-    <!-- Main App Screen -->
-    <div id="screen-app" class="hidden">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3 id="welcome-msg"></h3>
-            <button onclick="location.reload()" style="background:none; border:none; cursor:pointer;">خروج</button>
+    <!-- صندوق الشات -->
+    <div id="app-chat-window" class="chat-window hidden">
+        <div class="chat-header">
+            <span id="chat-target-name">اسم الطرف الآخر</span>
+            <button onclick="closeChatWindow()" style="background:none; border:none; color:white; font-weight:bold; cursor:pointer;">✕</button>
         </div>
-        <input type="text" id="search" placeholder="🔍 بحث عن بضاعة..." oninput="render()" style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd;">
-        <div id="content-list"></div>
+        <div class="chat-body" id="chat-messages-body"></div>
+        <div class="chat-footer">
+            <input type="text" id="chat-msg-input" placeholder="اكتب رسالتك هنا...">
+            <button onclick="sendLiveChatMessage()">إرسال</button>
+        </div>
     </div>
-</div>
 
-<!-- Chat Modal -->
-<div id="chat-modal" class="hidden" style="position:fixed; bottom:0; width:100%; max-width:600px; background:white; padding:20px; border-radius:20px 20px 0 0; box-shadow:0 -5px 20px rgba(0,0,0,0.2);">
-    <h4 id="chat-title"></h4>
-    <div class="chat-box" id="chat-messages"></div>
-    <input id="chat-input" placeholder="رسالة..." style="width:70%; padding:10px;">
-    <button onclick="sendMessage()">إرسال</button>
-    <button onclick="document.getElementById('chat-modal').classList.add('hidden')">إغلاق</button>
-</div>
-
-<script>
-    const FIREBASE_URL = "https://souq-app-35646-default-rtdb.firebaseio.com/"; // اللينك الخاص بك
-    let user = { name: '', role: '' }, products = [], activeChatWith = '';
-
-    function login() {
-        user.name = document.getElementById('input-name').value;
-        user.role = document.getElementById('input-role').value;
-        if(!user.name) return alert("اكتب اسمك!");
-        document.getElementById('screen-login').classList.add('hidden');
-        document.getElementById('screen-app').classList.remove('hidden');
-        document.getElementById('welcome-msg').innerText = user.role == 'merchant' ? "مرحباً تاجر " + user.name : "مرحباً مندوب " + user.name;
-        loadData();
-    }
-
-    function loadData() {
-        fetch(FIREBASE_URL + "data.json")
-        .then(res => res.json())
-        .then(data => {
-            products = data?.products ? Object.keys(data.products).map(k => ({id: k, ...data.products[k]})) : [];
-            render();
-        });
-        setInterval(loadData, 5000);
-    }
-
-    function render() {
-        const query = document.getElementById('search').value;
-        const list = document.getElementById('content-list');
-        list.innerHTML = products.filter(p => p.name.includes(query)).map(p => `
-            <div class="card">
-                <h3>${p.name} 📦</h3>
-                <p>السعر: ${p.price} ج.م</p>
-                <p>التاجر: ${p.merchantName} ${p.rating ? '⭐' + p.rating : ''}</p>
-                ${p.status === 'booked' ? `<p style="color:red">محجوز بواسطة: ${p.bookedBy}</p>` : 
-                `<button class="btn btn-primary" onclick="book('${p.id}')">حجز البضاعة</button>`}
-                <button class="btn" style="background:#ddd" onclick="startChat('${p.merchantName}')">💬 مراسلة التاجر</button>
+    <div class="app-card">
+        
+        <!-- 1️⃣ شاشة الدخول واختيار الهوية القديمة -->
+        <div id="screen-welcome">
+            <div class="text-center">
+                <h1>سوق التجار والمناديب الذكي 🤝</h1>
+                <p class="subtitle">نسخة السيرفر المشترك الكاملة والمطورة لايف</p>
             </div>
-        `).join('');
-    }
+            
+            <label>اكتب اسمك أو اسم المحل الخاص بك:</label>
+            <input id="user-display-name" type="text" placeholder="مثال: محل الأمانة، أو المندوب أحمد">
+            
+            <label style="margin-top: 15px;">اختر صفتك للدخول:</label>
+            <div class="role-grid">
+                <button id="btn-merchant-role" onclick="setRole('merchant')" class="role-btn active">🏬 أنا تاجر</button>
+                <button id="btn-rep-role" onclick="setRole('representative')" class="role-btn">🛵 أنا مندوب</button>
+            </div>
+            
+            <button onclick="loginUser()" class="btn-submit" style="background: #10b981;">دخول المنصة ➔</button>
 
-    function book(id) {
-        fetch(FIREBASE_URL + `data/products/${id}.json`, {
-            method: 'PATCH',
-            body: JSON.stringify({ status: 'booked', bookedBy: user.name })
-        }).then(() => {
-            document.getElementById('toast').innerText = "تم حجز البضاعة!";
-            document.getElementById('toast').classList.remove('hidden');
-            setTimeout(() => document.getElementById('toast').classList.add('hidden'), 2000);
-            loadData();
-        });
-    }
+            <!-- إعلان Adsterra شاشة الدخول القديم -->
+            <div class="adsterra-space">
+                <script type="text/javascript">
+                    atOptions = { 'key' : '1dbd6aa0d79aa551edf53ad17a91d272', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };
+                </script>
+                <script type="text/javascript" src="https://www.highperformanceformat.com/1dbd6aa0d79aa551edf53ad17a91d272/invoke.js"></script>
+            </div>
+        </div>
 
-    function startChat(other) {
-        activeChatWith = other;
-        document.getElementById('chat-title').innerText = "دردشة مع: " + other;
-        document.getElementById('chat-modal').classList.remove('hidden');
-    }
+        <!-- 2️⃣ لوحة تحكم التاجر القديمة كاملة كما هي -->
+        <div id="screen-merchant" class="hidden">
+            <div class="panel-header">
+                <button onclick="logout()" class="btn-back">خروج ↩</button>
+                <h2 id="merchant-heading">لوحة التاجر 🏬</h2>
+            </div>
+            
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 16px; margin-bottom: 20px;">
+                <label>اسم البضاعة / المنتج</label>
+                <input id="p-name" type="text" placeholder="مثال: كرتونة زيت، طرد ملابس">
+                
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label>السعر (جنيه)</label>
+                        <input id="p-price" type="number" placeholder="السعر">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>رقم التليفون</label>
+                        <input id="p-phone" type="text" placeholder="01xxxxxxxxx">
+                    </div>
+                </div>
 
-    function sendMessage() {
-        const msg = document.getElementById('chat-input').value;
-        // هنا بيتم حفظ الرسالة في السيرفر (منطق بسيط للربط)
-        alert("تم إرسال: " + msg); 
-        document.getElementById('chat-input').value = '';
-    }
+                <label>📍 موقع المحل (لوكيشن الخريطة)</label>
+                <div class="location-container">
+                    <button type="button" class="btn-gps" onclick="getCurrentGPSLocation()">🎯 تحديد موقعي الحالي تلقائياً</button>
+                    <div id="gps-status-text" class="gps-status" style="display:none;"></div>
+                    <input id="p-location" type="text" placeholder="رابط موقع المحل (سيتم كتابته تلقائياً بالزر أعلاه أو يدوي)">
+                </div>
+                
+                <label style="margin-top: 12px;">وصف وتفاصيل البضاعة</label>
+                <textarea id="p-desc" rows="2" placeholder="اكتب تفاصيل وحالة البضاعة هنا..."></textarea>
+                
+                <label>صورة المنتج</label>
+                <input id="p-image" type="file" accept="image/*" style="background: white; padding: 8px;">
+                
+                <button onclick="processAndAddProduct()" class="btn-submit">نشر البضاعة للسيرفر العام</button>
+            </div>
+            
+            <h3 style="font-size: 15px; margin-bottom: 10px; text-align: right;">📦 بضاعتك المعروضة حالياً:</h3>
+            <div id="merchant-prods-list" class="products-grid"></div>
+        </div>
 
-</script>
+        <!-- 3️⃣ لوحة تحكم المندوب القديمة مع إضافة شريط البحث -->
+        <div id="screen-rep" class="hidden">
+            <div class="panel-header">
+                <button onclick="logout()" class="btn-back">خروج ↩</button>
+                <h2 id="rep-heading">سوق المناديب 🛵</h2>
+            </div>
+            
+            <!-- إعلان Adsterra لوحة المندوب القديم -->
+            <div class="adsterra-space" style="margin-top: 0; margin-bottom: 20px;">
+                <script type="text/javascript">
+                    atOptions = { 'key' : '1dbd6aa0d79aa551edf53ad17a91d272', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };
+                </script>
+                <script type="text/javascript" src="https://www.highperformanceformat.com/1dbd6aa0d79aa551edf53ad17a91d272/invoke.js"></script>
+            </div>
+
+            <!-- 🔵 خانة البحث المضافة حديثاً -->
+            <input type="text" id="market-search-bar" class="search-input" placeholder="🔍 ابحث عن بضاعة معينة بالسوق فوراً..." oninput="filterMarketProducts(this.value)">
+
+            <h3 style="font-size: 15px; margin-bottom: 12px; text-align: right;">🛒 البضائع المتاحة حالياً في السوق للطلب:</h3>
+            <div id="market-prods-list" class="products-grid"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // رابط الـ Firebase الخاص بك المشترك وثابت بنجاح
+        const FIREBASE_URL = "https://souq-app-35646-default-rtdb.firebaseio.com/"; 
+
+        var allProducts = [];
+        var currentUser = { name: '', role: 'merchant' };
+        var activeChatWith = "";
+        var lastMessagesCount = 0;
+
+        // دالة تحديد الـ GPS تلقائياً بضغطة زر القديمة
+        function getCurrentGPSLocation() {
+            var statusDiv = document.getElementById('gps-status-text');
+            var locationInput = document.getElementById('p-location');
+            if (!navigator.geolocation) { alert("متصفحك لا يدعم تحديد الموقع التلقائي."); return; }
+            statusDiv.style.display = "block"; statusDiv.style.color = "#0284c7"; statusDiv.innerText = "⏳ جاري قراءة إحداثيات موقعك الحالي...";
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var lat = position.coords.latitude; var lon = position.coords.longitude;
+                var googleMapsUrl = "https://www.google.com/maps?q=" + lat + "," + lon;
+                locationInput.value = googleMapsUrl; statusDiv.style.color = "#10b981"; statusDiv.innerText = "✅ تم تحديد موقعك بنجاح!";
+            }, function(error) {
+                statusDiv.style.color = "#ef4444"; statusDiv.innerText = "❌ فشل تحديد الموقع، تأكد من تفعيل الـ GPS.";
+            }, { enableHighAccuracy: true, timeout: 10000 });
+        }
+
+        // دالة عرض الإشعارات العلوية (Toast)
+        function triggerToastNotification(message) {
+            var toast = document.getElementById('app-toast');
+            toast.innerText = message; toast.classList.remove('hidden');
+            setTimeout(function() { toast.classList.add('hidden'); }, 4000);
+        }
+
+        // جلب البيانات من السيرفر ومراقبة الرسائل للشات والإشعارات
+        function loadProductsFromServer() {
+            if(FIREBASE_URL.includes("your-project")) return;
+            
+            // جلب المنتجات
+            fetch(FIREBASE_URL + "products.json")
+            .then(res => res.json())
+            .then(data => {
+                allProducts = [];
+                if(data) {
+                    Object.keys(data).forEach(key => {
+                        allProducts.push({fbKey: key, ...data[key]});
+                    });
+                }
+                var searchVal = document.getElementById('market-search-bar').value || "";
+                if(currentUser.name) {
+                    if(currentUser.role === 'merchant') renderMerchantProducts();
+                    else filterMarketProducts(searchVal);
+                }
+            }).catch(err => console.log(err));
+
+            // جلب رسائل الشات للتحديث الفوري والإشعارات لايف لكل الهواتف
+            if(currentUser.name) {
+                fetch(FIREBASE_URL + "chats.json")
+                .then(res => res.json())
+                .then(chatData => {
+                    if(!chatData) return;
+                    var totalMsgs = Object.keys(chatData).length;
+                    
+                    // إذا ظهرت رسالة جديدة على السيرفر وموجهة للمستخدم الحالي، يظهر إشعار فوري صوتي/مرئي
+                    if(totalMsgs > lastMessagesCount && lastMessagesCount !== 0) {
+                        var keys = Object.keys(chatData);
+                        var latest = chatData[keys[keys.length - 1]];
+                        if(latest.receiver === currentUser.name) {
+                            triggerToastNotification("💬 رسالة جديدة من [" + latest.sender + "]: " + latest.msg);
+                        }
+                    }
+                    lastMessagesCount = totalMsgs;
+                    if(!document.getElementById('app-chat-window').classList.contains('hidden')) {
+                        updateChatMessagesUI(chatData);
+                    }
+                });
+            }
+        }
+
+        // التحديث التلقائي المستمر لايف كل 4 ثوانٍ لربط الأجهزة فوراً
+        setInterval(loadProductsFromServer, 4000);
+
+        function setRole(role) {
+            currentUser.role = role;
+            document.getElementById('btn-merchant-role').classList.remove('active');
+            document.getElementById('btn-rep-role').classList.remove('active');
+            if(role === 'merchant') document.getElementById('btn-merchant-role').classList.add('active');
+            else document.getElementById('btn-rep-role').classList.add('active');
+        }
+
+        function loginUser() {
+            var nameInput = document.getElementById('user-display-name').value.trim();
+            if(!nameInput) { alert('من فضلك اكتب اسمك أولاً!'); return; }
+            currentUser.name = nameInput;
+            document.getElementById('screen-welcome').classList.add('hidden');
+            
+            loadProductsFromServer();
+            if(currentUser.role === 'merchant') {
+                document.getElementById('merchant-heading').innerText = "محل: " + currentUser.name;
+                document.getElementById('screen-merchant').classList.remove('hidden');
+            } else {
+                document.getElementById('rep-heading').innerText = "المندوب: " + currentUser.name;
+                document.getElementById('screen-rep').classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            document.getElementById('screen-merchant').classList.add('hidden');
+            document.getElementById('screen-rep').classList.add('hidden');
+            document.getElementById('screen-welcome').classList.remove('hidden');
+            closeChatWindow();
+        }
+
+        function processAndAddProduct() {
+            var name = document.getElementById('p-name').value.trim();
+            var price = document.getElementById('p-price').value.trim();
+            var phone = document.getElementById('p-phone').value.trim();
+            var locationUrl = document.getElementById('p-location').value.trim();
+            var desc = document.getElementById('p-desc').value.trim();
+            var imgFile = document.getElementById('p-image').files[0];
+
+            if(!name || !price || !phone) { alert('برجاء ملء خانات الاسم، السعر، والتليفون!'); return; }
+            var defaultImg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2'><rect x='3' y='3' width='18' height='18' rx='2'/><circle cx='8.5' cy='8.5' r='1.5'/><path d='M21 15l-5-5L5 21'/></svg>";
+
+            if(imgFile) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = new Image();
+                    img.onload = function() {
+                        var canvas = document.createElement('canvas'); var max_size = 350; var width = img.width; var height = img.height;
+                        if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } } 
+                        else { if (height > max_size) { width *= max_size / height; height = max_size; } }
+                        canvas.width = width; canvas.height = height; var ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height); var compressedBase64 = canvas.toDataURL('image/jpeg', 0.5);
+                        saveProductToServer(name, price, phone, locationUrl, desc, compressedBase64);
+                    }
+                    img.src = e.target.result;
+                }
+                reader.readAsDataURL(imgFile);
+            } else {
+                saveProductToServer(name, price, phone, locationUrl, desc, defaultImg);
+            }
+        }
+
+        function saveProductToServer(name, price, phone, locationUrl, desc, imgData) {
+            var newProd = {
+                id: Date.now(), merchantName: currentUser.name, name: name, price: price, phone: phone,
+                location: locationUrl, desc: desc ? desc : 'بضاعة جاهزة للاستلام فوراً.', image: imgData,
+                isBooked: false, bookedBy: ""
+            };
+            fetch(FIREBASE_URL + "products.json", { method: "POST", body: JSON.stringify(newProd) })
+            .then(res => res.json()).then(() => {
+                alert('✅ تم النشر على السيرفر العام بنجاح!');
+                document.getElementById('p-name').value = ''; document.getElementById('p-price').value = '';
+                document.getElementById('p-phone').value = ''; document.getElementById('p-location').value = '';
+                document.getElementById('p-desc').value = ''; document.getElementById('p-image').value = '';
+                document.getElementById('gps-status-text').style.display = 'none';
+                loadProductsFromServer();
+            });
+        }
+
+        // عرض منتجات التاجر بلوحته الأصلية
+        function renderMerchantProducts() {
+            var list = document.getElementById('merchant-prods-list'); var html = ''; var count = 0;
+            for(var i = 0; i < allProducts.length; i++) {
+                if(allProducts[i].merchantName === currentUser.name) {
+                    count++;
+                    var locLink = allProducts[i].location ? '<a class="prod-location" href="' + allProducts[i].location + '" target="_blank">📍 لوكيشن محلك المرفوع</a>' : '';
+                    var bookedStatus = allProducts[i].isBooked ? '<div class="booked-badge">⚠️ تم حجزها بواسطة المندوب: ' + allProducts[i].bookedBy + '</div>' : '';
+                    html += '<div class="prod-card">' +
+                            '<button onclick="deleteProduct(\'' + allProducts[i].fbKey + '\')" class="delete-btn">حذف ❌</button>' +
+                            '<img class="prod-img" src="' + allProducts[i].image + '">' +
+                            '<div class="prod-title">📦 ' + allProducts[i].name + '</div>' +
+                            '<div class="prod-price">' + allProducts[i].price + ' ج.م</div>' +
+                            '<div class="prod-desc">' + allProducts[i].desc + '</div>' +
+                            bookedStatus +
+                            '<div class="actions-div" style="margin-top:10px;">' +
+                            '<span style="font-size:12px; color:#475569; text-align:center;">📞 تليفونك: ' + allProducts[i].phone + '</span>' +
+                            locLink +
+                            '<button class="btn-chat" onclick="openLiveChatWindow(\'' + allProducts[i].bookedBy + '\')">💬 شات المندوب الحاجز</button>' +
+                            '</div></div>';
+                }
+            }
+            list.innerHTML = count === 0 ? '<p style="text-align:center; font-size:12px; color:#94a3b8; padding:15px; grid-column:1/-1;">لم تقم بعرض أي بضاعة بعد.</p>' : html;
+        }
+
+        function deleteProduct(fbKey) {
+            fetch(FIREBASE_URL + "products/" + fbKey + ".json", { method: "DELETE" }).then(() => { loadProductsFromServer(); });
+        }
+
+        // تصفية وعرض منتجات السوق للمندوب مع الحفاظ على التصميم والوظائف القديمة كاملة
+        function filterMarketProducts(keyword) {
+            var list = document.getElementById('market-prods-list'); var html = '';
+            var filtered = allProducts.filter(function(p) { return p.name.toLowerCase().includes(keyword.toLowerCase()); });
+            
+            if(filtered.length === 0) { list.innerHTML = '<p style="text-align:center; font-size:13px; color:#94a3b8; padding:30px; grid-column:1/-1;">لا يوجد بضائع تطابق بحثك حالياً.</p>'; return; }
+            
+            for(var i = 0; i < filtered.length; i++) {
+                var p = filtered[i];
+                var locLink = p.location ? '<a class="prod-location" href="' + p.location + '" target="_blank">📍 موقع المحل على الخريطة</a>' : '<span style="font-size:11px; color:#94a3b8; text-align:center;">لم يضف التاجر لوكيشن</span>';
+                
+                // زرار حجز البضاعة المطور
+                var bookingBtn = p.isBooked ? '<div class="booked-badge">🚫 محجوزة بالفعل لـ ' + p.bookedBy + '</div>' : '<button class="btn-book" onclick="bookProductNow(\'' + p.fbKey + '\')">📦 احجز البضاعة دي باسمي</button>';
+                
+                html += '<div class="prod-card">' +
+                        '<img class="prod-img" src="' + p.image + '">' +
+                        '<div class="prod-shop">🏬 التاجر: ' + p.merchantName + '</div>' +
+                        '<div class="prod-title">📦 ' + p.name + '</div>' +
+                        '<div class="prod-price">' + p.price + ' ج.م</div>' +
+                        '<div class="prod-desc">' + p.desc + '</div>' +
+                        '<div class="actions-div">' +
+                        '<a class="prod-contact" href="tel:' + p.phone + '">📞 اتصال وتفاوض</a>' +
+                        locLink +
+                        bookingBtn +
+                        '<button class="btn-chat" onclick="openLiveChatWindow(\'' + p.merchantName + '\')">💬 فتح شات سريع لايف</button>' +
+                        '</div></div>';
+            }
+            list.innerHTML = html;
+        }
+
+        // دالة حجز البضاعة وتغيير حالتها في قاعدة البيانات فوراً
+        function bookProductNow(fbKey) {
+            fetch(FIREBASE_URL + "products/" + fbKey + ".json", {
+                method: "PATCH",
+                body: JSON.stringify({ isBooked: true, bookedBy: currentUser.name })
+            })
+            .then(() => {
+                triggerToastNotification("🎉 تم حجز البضاعة بنجاح وباقي المناديب تم إعلامهم!");
+                loadProductsFromServer();
+            });
+        }
+
+        // 💬 تشغيل نظام الشات المباشر المطور
+        function openLiveChatWindow(targetUser) {
+            if(!targetUser || targetUser === "undefined" || targetUser === "") { alert("لا يمكن فتح شات بدون تحديد طرف آخر!"); return; }
+            activeChatWith = targetUser;
+            document.getElementById('chat-target-name').innerText = "دردشة مباشرة مع: " + targetUser;
+            document.getElementById('app-chat-window').classList.remove('hidden');
+            fetch(FIREBASE_URL + "chats.json").then(res => res.json()).then(data => updateChatMessagesUI(data));
+        }
+
+        function closeChatWindow() { document.getElementById('app-chat-window').classList.add('hidden'); }
+
+        function sendLiveChatMessage() {
+            var input = document.getElementById('chat-msg-input');
+            var text = input.value.trim();
+            if(!text) return;
+
+            var msgObject = { sender: currentUser.name, receiver: activeChatWith, msg: text, timestamp: Date.now() };
+            fetch(FIREBASE_URL + "chats.json", { method: "POST", body: JSON.stringify(msgObject) })
+            .then(() => {
+                input.value = "";
+                loadProductsFromServer();
+            });
+        }
+
+        function updateChatMessagesUI(chatData) {
+            var body = document.getElementById('chat-messages-body');
+            body.innerHTML = "";
+            if(!chatData) return;
+
+            Object.keys(chatData).forEach(key => {
+                var c = chatData[key];
+                // إظهار المحادثة المتبادلة بين الطرفين فقط لسرية البيع والشراء
+                if((c.sender === currentUser.name && c.receiver === activeChatWith) || (c.sender === activeChatWith && c.receiver === currentUser.name)) {
+                    var align = c.sender === currentUser.name ? "left" : "right";
+                    var color = c.sender === currentUser.name ? "#0284c7" : "#475569";
+                    body.innerHTML += '<div style="text-align:' + align + '; margin-bottom: 6px;">' +
+                                      '<span style="background:' + color + '; color:white; padding:5px 9px; border-radius:8px; display:inline-block; max-width:80%;">' +
+                                      c.msg + '</span></div>';
+                }
+            });
+            body.scrollTop = body.scrollHeight;
+        }
+    </script>
 </body>
 </html>
